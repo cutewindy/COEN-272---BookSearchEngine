@@ -14,3 +14,9 @@
 *.class
 
 src/test.java
+
+.idea/.name
+
+*.xml
+
+*.iml
