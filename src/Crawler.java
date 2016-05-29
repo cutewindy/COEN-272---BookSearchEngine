@@ -34,8 +34,9 @@ public class Crawler {
 	private int bookId= 1;
 
 
-	
-	
+
+	private static final String tmpString = "123";
+
 	
 	
 	/**
