@@ -1,13 +1,13 @@
 import org.jsoup.nodes.Document;
 
-public class BookPageFactory {
+public class PageParserFactory {
     private String site;
     private String url;
     private Document htmlDocument;
 
-    public static BookPage getBookPage(String site, String url, Document htmlDocument) {
+    public static PageParser getPageParser(String site, String url, Document htmlDocument) {
         if (site.equals("amazon")) {
-            return new AmazonBookPage(url, htmlDocument);
+            return new AmazonPageParser(url, htmlDocument);
         } else {
             throw new RuntimeException("site not found: " + site);
         }
