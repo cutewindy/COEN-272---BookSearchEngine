@@ -17,8 +17,9 @@ public abstract class Request {
     private Set<String> visitedUrls = new HashSet<String>();
     private Map<String, ArrayList<ArrayList<Integer>>> visitedPages = new HashMap();
 
-    Request(String url) {
+    Request(String url, String type) {
         this.url = url;
+        this.type = type;
     }
 
     abstract void parse(Response response);
@@ -107,9 +108,8 @@ public abstract class Request {
 
 class CategoryRequest extends Request {
 
-    public String type = "CategoryRequest";
     CategoryRequest(String url) {
-        super(url);
+        super(url, "CategoryRequest");
     }
 
     // find sub category via 'category menu' and add CategoryRequest in Crawler.requestQueue
@@ -122,9 +122,8 @@ class CategoryRequest extends Request {
 
 class CategoryLeafRequest extends Request {
 
-    public String type = "CategoryLeafRequest";
     CategoryLeafRequest(String url) {
-        super(url);
+        super(url, "CategoryLeafRequest");
     }
 
     // find book pages on current page via 'book page link' and add BookPageRequest in Crawler.requestQueue
@@ -157,9 +156,8 @@ class CategoryLeafRequest extends Request {
 
 class BookPageRequest extends Request {
 
-    public String type = "BookPageRequest";
     BookPageRequest(String url) {
-        super(url);
+        super(url, "BookPageRequest");
     }
 
     // call BookPage.parseBookPageInfo and BookPage.saveBookPageInfo
@@ -175,9 +173,10 @@ class BookPageRequest extends Request {
         boolean isBookPage = pageParser.isBookPage();
         System.out.println("\tisBook:" + isBookPage);
         if (isBookPage) {
-            Map<String, String> pageParserInfo = pageParser.parseBookPageInfo();
-            pageParser.saveBookPageInfo(Crawler.bookId++, pageParserInfo, Crawler.SITE + ".json");
+            Map<String, Object> pageParserInfo = pageParser.parseBookPageInfo();
+            pageParser.saveBookPageInfo(Crawler.bookId, pageParserInfo, Crawler.SITE + ".json");
             System.out.printf("\tSaved to %s.json => bookId: %s, title: %s\n", Crawler.SITE, Crawler.bookId, pageParserInfo.get("title"));
+            Crawler.bookId++;
         }
     }
 }

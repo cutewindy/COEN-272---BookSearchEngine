@@ -7,6 +7,6 @@ interface PageParser {
 
     // parse book page
     boolean isBookPage();
-    Map<String, String> parseBookPageInfo();
-    void saveBookPageInfo(int bookId, Map<String, String> bookPageInfo, String filename);
+    Map<String, Object> parseBookPageInfo();
+    void saveBookPageInfo(int bookId, Map<String, Object> bookPageInfo, String filename);
 }

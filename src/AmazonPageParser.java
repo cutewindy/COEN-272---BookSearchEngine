@@ -56,50 +56,59 @@ public class AmazonPageParser implements PageParser {
 	}
 
 
-	public Map<String, String> parseBookPageInfo() {
-		Map<String, String> book = new LinkedHashMap<String, String>();
+	public Map<String, Object> parseBookPageInfo() {
+		Map<String, Object> book = new LinkedHashMap<String, Object>();
 
-	    book.put("title", parseTitle());
-		book.put("url", this.url);
-	    book.put("price", parsePrice());
+	    book.put("title", parseTitle()); // required
+		book.put("url", this.url); // required
+	    book.put("price", parsePrice()); // required
 	    book.put("author", parseAuthor());
 	    book.put("ISBN10", parseISBN10());
 	    book.put("ISBN13", parseISBN13());
-	    book.put("category", parseCategory());
+	    book.put("genre", parseCategory());
 	    book.put("description", parseDescription());
-	    book.put("review", parseReview());
+	    book.put("star", parseStar());
 	    book.put("imgUrl", parseImgUrl());
 
 	    return book;
 	}
 
+	// required
 	private String parseTitle() {
 		Element title = this.htmlDocument.getElementById("productTitle");
 		return title.text();
 	}
 
-	private String parsePrice() {
+	// required
+	private Double parsePrice() {
 		Element buyNewSection = this.htmlDocument.getElementById("buyNewSection");
 		Elements prices = buyNewSection.getElementsByClass("offer-price");
 		if (prices.size() > 1) {
-			throw new RuntimeException("Found more than one offer-price!\n" + prices.toString());
+			throw new RuntimeException("Found more than one price!\n" + prices.toString());
 		}
-		return prices.get(0).text();
+		StringBuilder price = new StringBuilder(prices.get(0).text());
+		if (price.charAt(0) == '$') {
+			price.deleteCharAt(0);
+		}
+		return Double.parseDouble(price.toString());
 	}
 
 	private String parseAuthor() {
 		Elements authors = this.htmlDocument.getElementsByClass("contributorNameID");
+		if (authors.size() == 0) {
+			return "N/A";
+		}
 		if (authors.size() > 1) {
 			throw new RuntimeException("Found more than one author!\n" + authors.toString());
-		}
-		if (authors == null) {
-			throw new RuntimeException("Didn't find any author!");
 		}
 		return authors.get(0).text();
 	}
 
 	private String parseISBN10() {
 		Elements ISBN10s = this.htmlDocument.select("li:contains(ISBN-10:)");
+		if (ISBN10s.size() == 0) {
+			return "N/A";
+		}
 		if (ISBN10s.size() > 1) {
 			throw new RuntimeException("Found more than one ISBN10!\n" + ISBN10s.toString());
 		}
@@ -109,12 +118,15 @@ public class AmazonPageParser implements PageParser {
 			return m.group(1);
 		}
 		else {
-			return "";
+			return "N/A";
 		}
 	}
 
 	private String parseISBN13() {
 		Elements ISBN13s = this.htmlDocument.select("li:contains(ISBN-13:)");
+		if (ISBN13s.size() == 0) {
+			return "N/A";
+		}
 		if (ISBN13s.size() > 1) {
 			throw new RuntimeException("Found more than one ISBN13!\n" + ISBN13s.toString());
 		}
@@ -124,17 +136,23 @@ public class AmazonPageParser implements PageParser {
 			return m.group(1);
 		}
 		else {
-			return "";
+			return "N/A";
 		}
 	}
 
 	private String parseCategory() {
-		return "";
+		return "N/A";
 	}
 
 	private String parseDescription() {
 		Element bookDescription_feature_div = this.htmlDocument.getElementById("bookDescription_feature_div");
+		if (bookDescription_feature_div == null) {
+			return "N/A";
+		}
 		Elements noscripts = bookDescription_feature_div.getElementsByTag("noscript");
+		if (noscripts.size() == 0) {
+			return "N/A";
+		}
 		if (noscripts.size() > 1) {
 			throw new RuntimeException("Found more than one noscript!\n" + noscripts.toString());
 		}
@@ -143,6 +161,9 @@ public class AmazonPageParser implements PageParser {
 
 	private String parseImgUrl() {
 		Element imgUrl = this.htmlDocument.getElementById("imgBlkFront");
+		if (imgUrl == null) {
+			return "N/A";
+		}
 		// TODO: img src is base64 encoded, needs to decode it, currently using data-a-dynamic-image as a wordaround
 		// System.out.println(imgUrl);
 		// System.out.println(imgUrl.attr("data-a-dynamic-image"));
@@ -150,9 +171,15 @@ public class AmazonPageParser implements PageParser {
 		return imgUrls.keys().next().toString();
 	}
 
-	private String parseReview() {
+	private String parseStar() {
 		Element productDetailsTables = this.htmlDocument.getElementById("productDetailsTable");
+		if (productDetailsTables == null) {
+			return "N/A";
+		}
 		Elements reviews = productDetailsTables.select("span[class~=s_star_]");
+		if (reviews.size() == 0) {
+			return "N/A";
+		}
 		if (reviews.size() > 1) {
 			throw new RuntimeException("Found more than one review!\n" + reviews.toString());
 		}
@@ -162,11 +189,11 @@ public class AmazonPageParser implements PageParser {
 			return m.group(1);
 		}
 		else {
-			return "";
+			return "N/A";
 		}
 	}
 
-	public void saveBookPageInfo(int bookId, Map<String, String> bookPageInfo, String filename) {
+	public void saveBookPageInfo(int bookId, Map<String, Object> bookPageInfo, String filename) {
 		// sample output:
 		// {"index":{"_id":"<bookId>"}}
 		JSONObject bookIndex = new JSONObject();
@@ -202,8 +229,9 @@ public class AmazonPageParser implements PageParser {
 		// book page
 //		String url = "http://www.amazon.com/Oh-Places-Youll-Dr-Seuss/dp/0679805273/ref=sr_1_1?s=books&ie=UTF8&qid=1464329058&sr=1-1&keywords=book";
 		// category leaf page
-		String url = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
+//		String url = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
 //		String url = "http://www.amazon.com/s/ref=sr_pg_2?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&page=2&bbn=266162&ie=UTF8&qid=1464586805";
+		String url = "http://www.amazon.com/Philadelphia-Architecture-Guide-City-Fourth/dp/1589881109/ref=sr_1_19/187-3700663-0446832?s=books&ie=UTF8&qid=1464594276&sr=1-19&refinements=p_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2";
 		String USER_AGENT =
 				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
@@ -232,16 +260,16 @@ public class AmazonPageParser implements PageParser {
 
 		AmazonPageParser amazonPageParser = new AmazonPageParser(url, htmlDocument);
 		// parse book page
-		// boolean isBookPage = amazonPageParser.isBookPage();
-		// System.out.println("isBook:" + isBookPage);
-		// Map<String, String> bookPageInfo = amazonPageParser.parseBookPageInfo();
-		// System.out.println(new Gson().toJson(bookPageInfo));
-		// amazonPageParser.saveBookPageInfo(1, bookPageInfo, "amazon.json");
-		// System.out.println("Saved to amazon.json");
+		 boolean isBookPage = amazonPageParser.isBookPage();
+		 System.out.println("isBook:" + isBookPage);
+		 Map<String, Object> bookPageInfo = amazonPageParser.parseBookPageInfo();
+		 System.out.println(new Gson().toJson(bookPageInfo));
+		 amazonPageParser.saveBookPageInfo(1, bookPageInfo, "amazon.json");
+		 System.out.println("Saved to amazon.json");
 
 		// parse category leaf page
-		amazonPageParser.parseBookPageLinks();
-		amazonPageParser.parseNextPageLink();
+//		amazonPageParser.parseBookPageLinks();
+//		amazonPageParser.parseNextPageLink();
 
 
 

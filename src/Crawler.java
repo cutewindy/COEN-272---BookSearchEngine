@@ -7,11 +7,21 @@ public class Crawler {
 	public static final int MAX_PAGES_TO_SEARCH = 1000;
 	public static final int MAX_BOOKS_TO_SEARCH = 100;
 	public static int pageId = 1;
-	public static int bookId = 1;
 
-	public static final String SITE = "amazon";
-//	public static final String SEED = "http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Daps&field-keywords=books";
-	public static final String SEED = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
+	// amazon
+//	public static int bookId = 1;
+//	public static final String SITE = "amazon";
+//	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
+
+	// barnesNoble
+	public static int bookId = 10000;
+	public static final String SITE = "barnesNoble";
+	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
+
+	// betterWorld
+//	public static int bookId = 20000;
+//	public static final String SITE = "betterWorld";
+//	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
 
 	public static List<Request> requestQueue = new ArrayList<Request>();
 
@@ -22,8 +32,8 @@ public class Crawler {
 //		requestQueue.add(new CategoryRequest(SEED));
 		requestQueue.add(new CategoryLeafRequest(SEED));
 		while (!this.requestQueue.isEmpty()
-				&& this.pageId < MAX_PAGES_TO_SEARCH
-				&& this.bookId < MAX_BOOKS_TO_SEARCH) {
+				&& this.pageId <= MAX_PAGES_TO_SEARCH
+				&& this.bookId <= MAX_BOOKS_TO_SEARCH) {
 			try {
 				Request request = this.requestQueue.remove(0);
 
