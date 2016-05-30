@@ -1,10 +1,9 @@
 import java.io.*;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.*;
 
 import org.json.JSONObject;
-import org.jsoup.Connection;
+import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,16 +12,41 @@ import org.jsoup.select.Elements;
 import com.google.gson.Gson;
 
 
-public class AmazonBookPage implements BookPage {
+public class AmazonPageParser implements PageParser {
 
 	private String url;
 	private Document htmlDocument;
 
-	public AmazonBookPage(String url, Document htmlDocument) {
+	public AmazonPageParser(String url, Document htmlDocument) {
 		this.url = url;
 		this.htmlDocument = htmlDocument;
 	}
-	
+	public ArrayList<String> parseBookPageLinks() {
+		ArrayList<String> bookPageLinks = new ArrayList<>();
+		Element resultsCol  = this.htmlDocument.getElementById("resultsCol");
+		Elements h2s = resultsCol.select("h2[data-attribute]");
+		for (Element e : h2s) {
+			String bookPageLink = e.parent().attr("href");
+			bookPageLinks.add(bookPageLink);
+//			System.out.println(e.parent().attr("title"));
+//    		System.out.println(bookPageLink);
+		}
+//		System.out.println(bookPageLinks.size());
+
+		return bookPageLinks;
+	}
+
+	public String parseNextPageLink() {
+		String nextPageLink = null;
+		Element pagnNextLink = this.htmlDocument.getElementById("pagnNextLink");
+		if (pagnNextLink != null) {
+			nextPageLink = pagnNextLink.attr("href"); // relative link
+			nextPageLink = "http://www.amazon.com" + nextPageLink;
+		}
+		System.out.println(nextPageLink);
+		return nextPageLink;
+	}
+
 	public boolean isBookPage() {
 		Elements books = this.htmlDocument.select("body[class^=book]");
 		if (books.size() > 1) {
@@ -30,8 +54,8 @@ public class AmazonBookPage implements BookPage {
 		}
 		return (books.size() == 1) ? true : false;
 	}
-	
-	
+
+
 	public Map<String, String> parseBookPageInfo() {
 		Map<String, String> book = new LinkedHashMap<String, String>();
 
@@ -45,10 +69,10 @@ public class AmazonBookPage implements BookPage {
 	    book.put("description", parseDescription());
 	    book.put("review", parseReview());
 	    book.put("imgUrl", parseImgUrl());
-	    
+
 	    return book;
 	}
-	
+
 	private String parseTitle() {
 		Element title = this.htmlDocument.getElementById("productTitle");
 		return title.text();
@@ -62,15 +86,18 @@ public class AmazonBookPage implements BookPage {
 		}
 		return prices.get(0).text();
 	}
-	
+
 	private String parseAuthor() {
 		Elements authors = this.htmlDocument.getElementsByClass("contributorNameID");
 		if (authors.size() > 1) {
 			throw new RuntimeException("Found more than one author!\n" + authors.toString());
 		}
+		if (authors == null) {
+			throw new RuntimeException("Didn't find any author!");
+		}
 		return authors.get(0).text();
 	}
-	
+
 	private String parseISBN10() {
 		Elements ISBN10s = this.htmlDocument.select("li:contains(ISBN-10:)");
 		if (ISBN10s.size() > 1) {
@@ -104,7 +131,7 @@ public class AmazonBookPage implements BookPage {
 	private String parseCategory() {
 		return "";
 	}
-	
+
 	private String parseDescription() {
 		Element bookDescription_feature_div = this.htmlDocument.getElementById("bookDescription_feature_div");
 		Elements noscripts = bookDescription_feature_div.getElementsByTag("noscript");
@@ -113,7 +140,7 @@ public class AmazonBookPage implements BookPage {
 		}
 		return noscripts.get(0).text();
 	}
-	
+
 	private String parseImgUrl() {
 		Element imgUrl = this.htmlDocument.getElementById("imgBlkFront");
 		// TODO: img src is base64 encoded, needs to decode it, currently using data-a-dynamic-image as a wordaround
@@ -122,7 +149,7 @@ public class AmazonBookPage implements BookPage {
 		JSONObject imgUrls = new JSONObject(imgUrl.attr("data-a-dynamic-image"));
 		return imgUrls.keys().next().toString();
 	}
-	
+
 	private String parseReview() {
 		Element productDetailsTables = this.htmlDocument.getElementById("productDetailsTable");
 		Elements reviews = productDetailsTables.select("span[class~=s_star_]");
@@ -138,14 +165,19 @@ public class AmazonBookPage implements BookPage {
 			return "";
 		}
 	}
-	
-	public void saveBookPageInfo(int bookId, Map<String, String> bookPageInfo, String filename) throws IOException {
+
+	public void saveBookPageInfo(int bookId, Map<String, String> bookPageInfo, String filename) {
 		// sample output:
 		// {"index":{"_id":"<bookId>"}}
 		JSONObject bookIndex = new JSONObject();
 		bookIndex.put("index", new JSONObject().put("_id", bookId));
 
-		FileWriter fw = new FileWriter(filename, true); // # true: append
+		FileWriter fw = null;
+		try {
+			fw = new FileWriter(filename, true); // # true: append
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		BufferedWriter bw = new BufferedWriter(fw);
 		PrintWriter out = new PrintWriter(bw);
 
@@ -154,39 +186,64 @@ public class AmazonBookPage implements BookPage {
 //        out.println(bookPageInfo.toString());
 //        out.println(bookPageInfo.toString(4)); // DEBUG: pretty print json
 
-        out.close();
-        bw.close();
-        fw.close();
+		try {
+			out.close();
+			bw.close();
+			fw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
-	
-	public static void main(String[] args) throws IOException {
+
+	public static void main(String[] args) {
 		System.out.println("Game on!");
 
-		String url = "http://www.amazon.com/Oh-Places-Youll-Dr-Seuss/dp/0679805273/ref=sr_1_1?s=books&ie=UTF8&qid=1464329058&sr=1-1&keywords=book";
+		// book page
+//		String url = "http://www.amazon.com/Oh-Places-Youll-Dr-Seuss/dp/0679805273/ref=sr_1_1?s=books&ie=UTF8&qid=1464329058&sr=1-1&keywords=book";
+		// category leaf page
+		String url = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
+//		String url = "http://www.amazon.com/s/ref=sr_pg_2?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&page=2&bbn=266162&ie=UTF8&qid=1464586805";
 		String USER_AGENT =
 				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
-		Connection.Response response = Jsoup.connect(url)
-											.userAgent(USER_AGENT)
-											.timeout(100000)
-											.ignoreHttpErrors(true)
-											.execute();
+		Response response = null;
+		Document htmlDocument = null;
+		try {
+			response = Jsoup.connect(url)
+                            .userAgent(USER_AGENT)
+                            .timeout(100000)
+                            .ignoreHttpErrors(true)
+                            .execute();
+			htmlDocument = response.parse();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		int statusCode = response.statusCode();
 		System.out.println("statusCode: " + statusCode);
-		Document htmlDocument = response.parse();
 
 		// DEBUG: parse html page
-  		// PrintWriter writer= new PrintWriter("book.html");
-  		// writer.println(htmlDocument.toString());
+		try {
+			PrintWriter writer = new PrintWriter("book.html");
+			writer.println(htmlDocument.toString());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 
-		AmazonBookPage amazonBookPage = new AmazonBookPage(url, htmlDocument);
-		boolean isBookPage = amazonBookPage.isBookPage();
-		System.out.println("isBook:" + isBookPage);
-		Map<String, String> bookPageInfo = amazonBookPage.parseBookPageInfo();
-		System.out.println(new Gson().toJson(bookPageInfo));
-		amazonBookPage.saveBookPageInfo(1, bookPageInfo, "amazon.json");
-		System.out.println("Saved to amazon.json");
+		AmazonPageParser amazonPageParser = new AmazonPageParser(url, htmlDocument);
+		// parse book page
+		// boolean isBookPage = amazonPageParser.isBookPage();
+		// System.out.println("isBook:" + isBookPage);
+		// Map<String, String> bookPageInfo = amazonPageParser.parseBookPageInfo();
+		// System.out.println(new Gson().toJson(bookPageInfo));
+		// amazonPageParser.saveBookPageInfo(1, bookPageInfo, "amazon.json");
+		// System.out.println("Saved to amazon.json");
+
+		// parse category leaf page
+		amazonPageParser.parseBookPageLinks();
+		amazonPageParser.parseNextPageLink();
+
+
 
 		System.exit(0);
 	}
