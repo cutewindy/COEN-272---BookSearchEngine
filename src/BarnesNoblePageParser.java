@@ -31,12 +31,27 @@ public class BarnesNoblePageParser implements PageParser {
 
     @Override
     public ArrayList<String> parseBookPageLinks() {
-        return null;
+		ArrayList<String> bookPageLinks = new ArrayList<>();
+		Element searchGrid = this.htmlDocument.getElementById("searchGrid");
+		Elements ps = searchGrid.getElementsByClass("product-info-title");
+		for (Element p : ps) {
+			Elements a = p.select("a[href]");
+			String bookPageLink = "http://www.barnesandnoble.com" + a.attr("href");
+//			System.out.println(bookPageLink);
+			bookPageLinks.add(bookPageLink);
+		}
+//		System.out.println(ps.size());
+		return bookPageLinks;
     }
 
     @Override
     public String parseNextPageLink() {
-        return null;
+		String nextPageLink = null;
+		Elements pagination = this.htmlDocument.getElementsByClass("pagination");
+		Elements span = pagination.get(0).getElementsByAttributeValue("class", "next-page");
+		nextPageLink = span.get(0).parent().attr("href");
+		System.out.println(nextPageLink);
+		return nextPageLink;
     }
 
     @Override
@@ -188,8 +203,9 @@ public class BarnesNoblePageParser implements PageParser {
         // TODO Auto-generated method stub
         System.out.println("DEBUG========");
 //        String url = "http://www.barnesandnoble.com/w/harry-potter-and-the-cursed-child-parts-i-ii-j-k-rowling/1123463689?ean=9781338099133";
-		String url = "http://www.barnesandnoble.com/w/me-before-you-jojo-moyes/1110570195?ean=9780143124542";
+//		String url = "http://www.barnesandnoble.com/w/me-before-you-jojo-moyes/1110570195?ean=9780143124542";
 //        String url = "http://www.barnesandnoble.com/w/the-fires-of-vesuvius-mary-beard/1112257427?ean=9780674045866";
+        String url = "http://www.barnesandnoble.com/b/books/computers/apple/_/N-29Z8q8Zxhr";
         String USER_AGENT =
                 "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
@@ -204,23 +220,26 @@ public class BarnesNoblePageParser implements PageParser {
         System.out.println("\nstatusCode: " + statusCode);
         Document htmlDocument = response.parse();
         // DEBUG: parse html page
-//		 PrintWriter writer= new PrintWriter("book.html");
-//		 writer.println(htmlDocument.toString());
-//		 writer.close();
+		 PrintWriter writer= new PrintWriter("book.html");
+		 writer.println(htmlDocument.toString());
+		 writer.close();
 
 
         BarnesNoblePageParser barnesNobleBookPage = new BarnesNoblePageParser(url, htmlDocument);
 
-        System.out.println("\nCheck book page...");
-        boolean isBook = barnesNobleBookPage.isBookPage();
-        System.out.println("is book page: " + isBook);
-
-        System.out.println("\nParse book page...");
-        Map<String, Object> bookPageInfo = barnesNobleBookPage.parseBookPageInfo();
-        System.out.println(new Gson().toJson(bookPageInfo));
-
-        System.out.println("\nSave book info to barnesNoble.json...");
-        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "barnesNoble.json");
+//        System.out.println("\nCheck book page...");
+//        boolean isBook = barnesNobleBookPage.isBookPage();
+//        System.out.println("is book page: " + isBook);
+//
+//        System.out.println("\nParse book page...");
+//        Map<String, Object> bookPageInfo = barnesNobleBookPage.parseBookPageInfo();
+//        System.out.println(new Gson().toJson(bookPageInfo));
+//
+//        System.out.println("\nSave book info to barnesNoble.json...");
+//        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "barnesNoble.json");
+        
+		barnesNobleBookPage.parseBookPageLinks();
+		barnesNobleBookPage.parseNextPageLink();
 
     }
 

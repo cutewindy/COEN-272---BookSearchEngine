@@ -30,12 +30,24 @@ public class BetterWorldPageParser implements PageParser {
 
     @Override
     public ArrayList<String> parseBookPageLinks() {
-        return null;
+		ArrayList<String> bookPageLinks = new ArrayList<>();
+		Element searchResult = this.htmlDocument.getElementById("MainContentPlaceHolder_content__ctl0_SearchResults");
+		Elements names = searchResult.getElementsByClass("name");
+		for (Element n : names) {
+			Elements a = n.select("a[href]");
+			String bookPageLink = "http://www.betterworldbooks.com/" + a.attr("href");
+//			System.out.println(bookPageLink);
+			bookPageLinks.add(bookPageLink);
+		}
+//		System.out.println(names.size());
+		return bookPageLinks;    	
     }
 
     @Override
     public String parseNextPageLink() {
-        return null;
+        Element arrowNext = this.htmlDocument.getElementById("MainContentPlaceHolder_content__ctl0__ctl0__ctl0_1__ctl0_1_bottomPaging_1_NextPageLink_1");
+        Elements as = arrowNext.getElementsByTag("a");
+        return as.get(0).attr("href");
     }
 
     @Override
@@ -198,7 +210,8 @@ public class BetterWorldPageParser implements PageParser {
     public static void main(String[] args) {
         System.out.println("DEBUG========BetterWorldBooks");
 //        String url = "http://www.betterworldbooks.com/the-hunger-games-trilogy-id-9780545265355.aspx";
-        String url = "http://www.betterworldbooks.com/wwe-encyclopedia-second-edition-id-9780756691592.aspx";
+//        String url = "http://www.betterworldbooks.com/wwe-encyclopedia-second-edition-id-9780756691592.aspx";
+        String url = "http://www.betterworldbooks.com/computer-science-books-H833.aspx?dsNav=N:4294965695-3000833,Nr:AND(NOT(Condition%3aDigital)%2cNOT(Format%3aeBook))&=";
         String USER_AGENT =
                 "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
@@ -223,16 +236,19 @@ public class BetterWorldPageParser implements PageParser {
 
             BetterWorldPageParser betterWorldBooks = new BetterWorldPageParser(url, htmlDocument);
 
-            System.out.println("\nCheck book page...");
-            boolean isBook = betterWorldBooks.isBookPage();
-            System.out.println("is book page: " + isBook);
-
-            System.out.println("\nParse book page...");
-            Map<String, Object> bookPageInfo = betterWorldBooks.parseBookPageInfo();
-            System.out.println(new Gson().toJson(bookPageInfo));
-
-            System.out.println("\nSave book info to betterWorldBooks.json...");
-            betterWorldBooks.saveBookPageInfo(1, bookPageInfo, "betterWorldBooks.json");
+//            System.out.println("\nCheck book page...");
+//            boolean isBook = betterWorldBooks.isBookPage();
+//            System.out.println("is book page: " + isBook);
+//
+//            System.out.println("\nParse book page...");
+//            Map<String, Object> bookPageInfo = betterWorldBooks.parseBookPageInfo();
+//            System.out.println(new Gson().toJson(bookPageInfo));
+//
+//            System.out.println("\nSave book info to betterWorldBooks.json...");
+//            betterWorldBooks.saveBookPageInfo(1, bookPageInfo, "betterWorldBooks.json");
+            
+            betterWorldBooks.parseBookPageLinks();
+            betterWorldBooks.parseNextPageLink();
         }
         catch (IOException e) {
             // TODO Auto-generated catch block

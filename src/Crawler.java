@@ -4,25 +4,36 @@ import org.jsoup.Connection.Response;
 
 
 public class Crawler {
-	public static final int MAX_PAGES_TO_SEARCH = 1000;
-	public static final int MAX_BOOKS_TO_SEARCH = 100;
-	public static int pageId = 1;
 
+	
+	
+	// ======== input ========
 	// amazon
 	public static int bookId = 1;
 	public static final String SITE = "amazon";
-	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
+	public static final String SEED = "http://www.amazon.com/s/ref=lp_283155_nr_n_7?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A5&bbn=1000&ie=UTF8&qid=1464645210&rnid=1000";
 
 	// barnesNoble
-//	public static int bookId = 10000;
+//	public static int bookId = 10001;
 //	public static final String SITE = "barnesNoble";
-//	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
+//	public static final String SEED = "http://www.barnesandnoble.com/b/books/computers/apple/_/N-29Z8q8Zxhr?Nrpp=20&page=1";
 
 	// betterWorld
-//	public static int bookId = 20000;
+//	public static int bookId = 20001;
 //	public static final String SITE = "betterWorld";
-//	public static final String SEED = "http://www.amazon.com/gp/search/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1&bbn=1000&ie=UTF8&qid=1464594881&rnid=1000";
+//	public static final String SEED = "http://www.betterworldbooks.com/computer-science-books-H833.aspx?dsNav=N:4294965695-3000833,Nr:AND(NOT(Condition%3aDigital)%2cNOT(Format%3aeBook))&=";
 
+	// textbook
+//	public static int bookId = 30001;
+//	public static final String SITE = "textbook";
+//	public static final String SEED = "http://www.textbooks.com/Search.php?TYP=SBJ&dHTxt=computer&mHTxt=&CSID=AKDWKWDQKUJD2OTCD2CCQMSCB&PART=PRINT&TXT=computer";
+	// =======================
+
+	
+	
+	public static final int MAX_PAGES_TO_SEARCH = 1000;
+	public static int pageId = 1;
+	public static final int MAX_BOOKS_TO_SEARCH = 100 + bookId;	
 	public static List<Request> requestQueue = new ArrayList<Request>();
 
 	/**
@@ -39,7 +50,7 @@ public class Crawler {
 
 				System.out.printf("Visiting %s page: %s\n", request.type, request.url);
 				if (request.isDuplicateUrl()) {
-					System.out.println("Found duplicate url!");
+					System.out.println("Found duplicate u vrl!");
 					continue;
 				}
 				if (!request.isAllowed()) {
