@@ -144,7 +144,7 @@ public class BetterWorldPageParser implements PageParser {
     }
 
     private String parseGenre() {
-        return "N/A";
+        return Crawler.category;
     }
 
     private String parseDescription() {
@@ -244,8 +244,8 @@ public class BetterWorldPageParser implements PageParser {
 //            Map<String, Object> bookPageInfo = betterWorldBooks.parseBookPageInfo();
 //            System.out.println(new Gson().toJson(bookPageInfo));
 //
-//            System.out.println("\nSave book info to betterWorldBooks.json...");
-//            betterWorldBooks.saveBookPageInfo(1, bookPageInfo, "betterWorldBooks.json");
+//            System.out.println("\nSave book info to test.json...");
+//            betterWorldBooks.saveBookPageInfo(1, bookPageInfo, "test.json");
             
             betterWorldBooks.parseBookPageLinks();
             betterWorldBooks.parseNextPageLink();

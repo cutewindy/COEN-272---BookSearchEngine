@@ -141,7 +141,7 @@ public class AmazonPageParser implements PageParser {
 	}
 
 	private String parseCategory() {
-		return "N/A";
+		return Crawler.category;
 	}
 
 	private String parseDescription() {
@@ -231,10 +231,10 @@ public class AmazonPageParser implements PageParser {
 		// category leaf page
 //		String url = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
 //		String url = "http://www.amazon.com/s/ref=sr_pg_2?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&page=2&bbn=266162&ie=UTF8&qid=1464586805";
-		String url = "http://www.amazon.com/Philadelphia-Architecture-Guide-City-Fourth/dp/1589881109/ref=sr_1_19/187-3700663-0446832?s=books&ie=UTF8&qid=1464594276&sr=1-19&refinements=p_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2";
+		String url = Crawler.SEED;
 		String USER_AGENT =
-				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
-
+				"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
+		System.out.println("Visiting url: " + url);
 		Response response = null;
 		Document htmlDocument = null;
 		try {
@@ -243,6 +243,7 @@ public class AmazonPageParser implements PageParser {
                             .timeout(100000)
                             .ignoreHttpErrors(true)
                             .execute();
+			System.out.println("response size: " + response.bodyAsBytes().length);
 			htmlDocument = response.parse();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -253,23 +254,25 @@ public class AmazonPageParser implements PageParser {
 		// DEBUG: parse html page
 		try {
 			PrintWriter writer = new PrintWriter("book.html");
+			System.out.println("htmlDocument size: " + htmlDocument.toString().length());
 			writer.println(htmlDocument.toString());
+			writer.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		AmazonPageParser amazonPageParser = new AmazonPageParser(url, htmlDocument);
 		// parse book page
-		 boolean isBookPage = amazonPageParser.isBookPage();
-		 System.out.println("isBook:" + isBookPage);
-		 Map<String, Object> bookPageInfo = amazonPageParser.parseBookPageInfo();
-		 System.out.println(new Gson().toJson(bookPageInfo));
-		 amazonPageParser.saveBookPageInfo(1, bookPageInfo, "amazon.json");
-		 System.out.println("Saved to amazon.json");
+//		 boolean isBookPage = amazonPageParser.isBookPage();
+//		 System.out.println("isBook:" + isBookPage);
+//		 Map<String, Object> bookPageInfo = amazonPageParser.parseBookPageInfo();
+//		 System.out.println(new Gson().toJson(bookPageInfo));
+//		 amazonPageParser.saveBookPageInfo(1, bookPageInfo, "test.json");
+//		 System.out.println("Saved to test.json");
 
 		// parse category leaf page
-//		amazonPageParser.parseBookPageLinks();
-//		amazonPageParser.parseNextPageLink();
+		amazonPageParser.parseBookPageLinks();
+		amazonPageParser.parseNextPageLink();
 
 
 

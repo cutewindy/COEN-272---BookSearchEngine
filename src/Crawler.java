@@ -8,11 +8,15 @@ public class Crawler {
 	
 	
 	// ======== input ========
+	public static String category = "Literature & Fiction";
+	// refer to user agent sites when site gets blocked:
+	//     http://www.useragentstring.com/pages/Mozilla/
+	public static final String USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.1; it; rv:2.0b4) Gecko/20100818";
+	
 	// amazon
-	public static int bookId = 1;
+	public static int bookId = 16;
 	public static final String SITE = "amazon";
-	public static final String SEED = "http://www.amazon.com/s/ref=lp_283155_nr_n_7?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A5&bbn=1000&ie=UTF8&qid=1464645210&rnid=1000";
-
+	public static final String SEED = "http://www.amazon.com/s/ref=sr_pg_35?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A17&page=35&bbn=1000&ie=UTF8&qid=1464669565";
 	// barnesNoble
 //	public static int bookId = 10001;
 //	public static final String SITE = "barnesNoble";
@@ -31,9 +35,9 @@ public class Crawler {
 
 	
 	
-	public static final int MAX_PAGES_TO_SEARCH = 1000;
 	public static int pageId = 1;
-	public static final int MAX_BOOKS_TO_SEARCH = 100 + bookId;	
+	public static final int MAX_PAGES_TO_SEARCH = 100000;
+	public static final int MAX_BOOKS_TO_SEARCH = 2000 + bookId;
 	public static List<Request> requestQueue = new ArrayList<Request>();
 
 	/**
@@ -49,6 +53,10 @@ public class Crawler {
 				Request request = this.requestQueue.remove(0);
 
 				System.out.printf("Visiting %s page: %s\n", request.type, request.url);
+				if (SITE.equals("amazon") && request.url.contains("ebook")) {
+					System.out.println("Skip ebook request!");
+					continue;
+				}
 				if (request.isDuplicateUrl()) {
 					System.out.println("Found duplicate u vrl!");
 					continue;

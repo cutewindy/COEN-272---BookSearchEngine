@@ -137,7 +137,7 @@ public class TextbookPageParser implements PageParser{
 	}
 	
 	private String parseCategory() {
-		return "N/A";
+		return Crawler.category;
 	}
 	
 	private String parseDescription() {
@@ -235,8 +235,8 @@ public class TextbookPageParser implements PageParser{
 //	        Map<String, Object> bookPageInfo = textbook.parseBookPageInfo();
 //	        System.out.println(new Gson().toJson(bookPageInfo));
 //	
-//	        System.out.println("\nSave book info to textbook.json...");
-//	        textbook.saveBookPageInfo(1, bookPageInfo, "textbook.json");
+//	        System.out.println("\nSave book info to test.json...");
+//	        textbook.saveBookPageInfo(1, bookPageInfo, "test.json");
 	        
 	        textbook.parseBookPageLinks();
 	        textbook.parseNextPageLink();

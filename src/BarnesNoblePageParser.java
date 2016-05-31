@@ -235,8 +235,8 @@ public class BarnesNoblePageParser implements PageParser {
 //        Map<String, Object> bookPageInfo = barnesNobleBookPage.parseBookPageInfo();
 //        System.out.println(new Gson().toJson(bookPageInfo));
 //
-//        System.out.println("\nSave book info to barnesNoble.json...");
-//        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "barnesNoble.json");
+//        System.out.println("\nSave book info to test.json...");
+//        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "test.json");
         
 		barnesNobleBookPage.parseBookPageLinks();
 		barnesNobleBookPage.parseNextPageLink();
