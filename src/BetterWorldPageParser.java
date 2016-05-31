@@ -45,9 +45,11 @@ public class BetterWorldPageParser implements PageParser {
 
     @Override
     public String parseNextPageLink() {
-        Element arrowNext = this.htmlDocument.getElementById("MainContentPlaceHolder_content__ctl0__ctl0__ctl0_1__ctl0_1_bottomPaging_1_NextPageLink_1");
-        Elements as = arrowNext.getElementsByTag("a");
-        return as.get(0).attr("href");
+        Elements pagination = this.htmlDocument.getElementsByAttributeValue("class", "pagination");
+        Elements img = pagination.get(0).getElementsByAttributeValue("src", "../../images/arrow-next.gif");
+        Element a = img.get(0).parent();
+        System.out.println(a.attr("href"));
+        return a.attr("href");
     }
 
     @Override

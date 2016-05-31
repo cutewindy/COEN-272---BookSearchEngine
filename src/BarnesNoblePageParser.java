@@ -144,7 +144,7 @@ public class BarnesNoblePageParser implements PageParser {
     }
 
     private String parseGenre() {
-        return "N/A";
+        return Crawler.category;
     }
 
     private String parseDescription() {
