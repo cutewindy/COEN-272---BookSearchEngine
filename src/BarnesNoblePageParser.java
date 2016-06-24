@@ -205,7 +205,7 @@ public class BarnesNoblePageParser implements PageParser {
 //        String url = "http://www.barnesandnoble.com/w/harry-potter-and-the-cursed-child-parts-i-ii-j-k-rowling/1123463689?ean=9781338099133";
 //		String url = "http://www.barnesandnoble.com/w/me-before-you-jojo-moyes/1110570195?ean=9780143124542";
 //        String url = "http://www.barnesandnoble.com/w/the-fires-of-vesuvius-mary-beard/1112257427?ean=9780674045866";
-        String url = "http://www.barnesandnoble.com/b/books/computers/apple/_/N-29Z8q8Zxhr";
+        String url = "http://www.barnesandnoble.com/w/harry-potter-and-the-deathly-hallows-j-k-rowling/1100178133?ean=9780545010221";
         String USER_AGENT =
                 "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
@@ -227,19 +227,19 @@ public class BarnesNoblePageParser implements PageParser {
 
         BarnesNoblePageParser barnesNobleBookPage = new BarnesNoblePageParser(url, htmlDocument);
 
-//        System.out.println("\nCheck book page...");
-//        boolean isBook = barnesNobleBookPage.isBookPage();
-//        System.out.println("is book page: " + isBook);
-//
-//        System.out.println("\nParse book page...");
-//        Map<String, Object> bookPageInfo = barnesNobleBookPage.parseBookPageInfo();
-//        System.out.println(new Gson().toJson(bookPageInfo));
-//
-//        System.out.println("\nSave book info to test.json...");
-//        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "test.json");
+        System.out.println("\nCheck book page...");
+        boolean isBook = barnesNobleBookPage.isBookPage();
+        System.out.println("is book page: " + isBook);
+
+        System.out.println("\nParse book page...");
+        Map<String, Object> bookPageInfo = barnesNobleBookPage.parseBookPageInfo();
+        System.out.println(new Gson().toJson(bookPageInfo));
+
+        System.out.println("\nSave book info to test.json...");
+        barnesNobleBookPage.saveBookPageInfo(1, bookPageInfo, "test.json");
         
-		barnesNobleBookPage.parseBookPageLinks();
-		barnesNobleBookPage.parseNextPageLink();
+//		barnesNobleBookPage.parseBookPageLinks();
+//		barnesNobleBookPage.parseNextPageLink();
 
     }
 

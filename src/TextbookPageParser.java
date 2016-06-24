@@ -203,7 +203,7 @@ public class TextbookPageParser implements PageParser{
 //	    String url = "http://www.textbooks.com/Multivariable-Calculus-8th-Edition/9781305266643/Lopez-robert.php?CSID=AKDWKWDQKUJD2OTCD2CCQMSCB";
 //	    String url = "http://www.textbooks.com/Human-Anatomy-and-Physiology-10th-Edition/9780321927040/Elaine-N-Marieb.php?CSID=AKDWKWDQKUJD2OTCD2CCQMSCB";
 //	    String url = "http://www.textbooks.com/Human-Anatomy-and-Physiology---Text-9th-Edition/9780321743268/Elaine-N-Marieb.php?CSID=AKDWKWDQKUJD2OTCD2CCQMSCB";
-		String url = "http://www.textbooks.com/Search.php?TYP=SBJ&dHTxt=computer&mHTxt=&CSID=AKDWKWDQKUJD2OTCD2CCQMSCB&PART=PRINT&TXT=computer";
+		String url = "http://www.textbooks.com/Introduction-to-Algorithms-3rd-Edition/9780262033848/CormenThomas-H.php?CSID=AKD3WTQZQBTWJUKODOKMACSOB";
 		String USER_AGENT =
 	            "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 	
@@ -227,19 +227,19 @@ public class TextbookPageParser implements PageParser{
 	
 	        TextbookPageParser textbook = new TextbookPageParser(url, htmlDocument);
 	
-//	        System.out.println("\nCheck book page...");
-//	        boolean isBook = textbook.isBookPage();
-//	        System.out.println("is book page: " + isBook);
-//	
-//	        System.out.println("\nParse book page...");
-//	        Map<String, Object> bookPageInfo = textbook.parseBookPageInfo();
-//	        System.out.println(new Gson().toJson(bookPageInfo));
-//	
-//	        System.out.println("\nSave book info to test.json...");
-//	        textbook.saveBookPageInfo(1, bookPageInfo, "test.json");
+	        System.out.println("\nCheck book page...");
+	        boolean isBook = textbook.isBookPage();
+	        System.out.println("is book page: " + isBook);
+	
+	        System.out.println("\nParse book page...");
+	        Map<String, Object> bookPageInfo = textbook.parseBookPageInfo();
+	        System.out.println(new Gson().toJson(bookPageInfo));
+	
+	        System.out.println("\nSave book info to test.json...");
+	        textbook.saveBookPageInfo(1, bookPageInfo, "test.json");
 	        
-	        textbook.parseBookPageLinks();
-	        textbook.parseNextPageLink();
+//	        textbook.parseBookPageLinks();
+//	        textbook.parseNextPageLink();
 	    }
 	    catch (IOException e) {
 	        // TODO Auto-generated catch block

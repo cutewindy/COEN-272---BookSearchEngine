@@ -231,7 +231,10 @@ public class AmazonPageParser implements PageParser {
 		// category leaf page
 //		String url = "http://www.amazon.com/s/ref=sr_nr_n_0?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&bbn=266162&ie=UTF8&qid=1464546269&rnid=266162";
 //		String url = "http://www.amazon.com/s/ref=sr_pg_2?fst=as%3Aoff&rh=n%3A283155%2Cp_n_availability%3A2245266011%2Cp_n_fresh_match%3A1-2%2Cn%3A%211000%2Cn%3A1%2Cn%3A173508%2Cn%3A266162%2Cn%3A3564986011&page=2&bbn=266162&ie=UTF8&qid=1464586805";
-		String url = Crawler.SEED;
+//		String url = Crawler.SEED;
+		
+		String url = "http://www.amazon.com/Harry-Potter-Deathly-Hallows-Book/dp/0545010225/ref=tmm_hrd_swatch_0?_encoding=UTF8&qid=1464741708&sr=1-1";
+		
 		String USER_AGENT =
 				"Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36";
 		System.out.println("Visiting url: " + url);
@@ -263,16 +266,16 @@ public class AmazonPageParser implements PageParser {
 
 		AmazonPageParser amazonPageParser = new AmazonPageParser(url, htmlDocument);
 		// parse book page
-//		 boolean isBookPage = amazonPageParser.isBookPage();
-//		 System.out.println("isBook:" + isBookPage);
-//		 Map<String, Object> bookPageInfo = amazonPageParser.parseBookPageInfo();
-//		 System.out.println(new Gson().toJson(bookPageInfo));
-//		 amazonPageParser.saveBookPageInfo(1, bookPageInfo, "test.json");
-//		 System.out.println("Saved to test.json");
+		 boolean isBookPage = amazonPageParser.isBookPage();
+		 System.out.println("isBook:" + isBookPage);
+		 Map<String, Object> bookPageInfo = amazonPageParser.parseBookPageInfo();
+		 System.out.println(new Gson().toJson(bookPageInfo));
+		 amazonPageParser.saveBookPageInfo(1, bookPageInfo, "test.json");
+		 System.out.println("Saved to test.json");
 
 		// parse category leaf page
-		amazonPageParser.parseBookPageLinks();
-		amazonPageParser.parseNextPageLink();
+//		amazonPageParser.parseBookPageLinks();
+//		amazonPageParser.parseNextPageLink();
 
 
 
